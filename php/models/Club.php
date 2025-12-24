@@ -1,25 +1,39 @@
-
 <?php
 
-use Core\Database\Migration\Column;
+
 use Core\Database\Migration\Table;
+// use Core\Lombok\Getter;
+use Core\ORM\Migration\Attributes\Column;
+use Core\ORM\Migration\Constrains\AutoIncrement;
+use Core\ORM\Migration\Constrains\Defaulte;
+use Core\ORM\Migration\Constrains\Id;
+use Core\ORM\Migration\Constrains\Text;
+use Core\ORM\Migration\Constrains\TimeStamp;
+
+#[Attribute(Attribute::TARGET_CLASS)]
 
 #[Table("clubs")]
+
+
 class Club
 {
 
-
     public function __construct(
-        #[Column("INT", primary: true, autoInc: true, unique: true)]
+        #[Id]
+        #[AutoIncrement]
+        #[Column(unique: true)]
         public int $club_id,
 
-        #[Column("VARCHAR(255)", primary: false, nullable: false, unique: true)]
+        #[Column(nullable: false, unique: true)]
+        #[Text]
         public string $name,
 
-        #[Column("VARCHAR(255)", primary: false, nullable: false, unique: false)]
+        #[Column(nullable: false, unique: false)]
         public string $city,
 
-        #[Column("TIMESTAMP", primary: false, nullable: false, unique: true,default: "CURRENT_TIMESTAMP")]
+        #[TimeStamp]
+        #[Defaulte("CURRENT_TIMESTAMP")]
+        #[Column(nullable: false, unique: true)]
         public string $created_at,
     ) {}
 }

@@ -1,35 +1,41 @@
 <?php
 
-use Core\Database\Migration\Column;
+
 use Core\Database\Migration\ForeignKey;
 use Core\Database\Migration\Table;
+use Core\ORM\Migration\Attributes\Column;
+use Core\ORM\Migration\Constrains\AutoIncrement;
+use Core\ORM\Migration\Constrains\Id;
 
 #[Table("matches")]
 
 class MatchGame
 {
     public function __construct(
-        #[Column("INT", true, true, false)]
+        #[Id]
+        #[AutoIncrement]
+        #[Column(unique: true)]
         public int $match_id,
 
-        #[Column("INT", true, false, false)]
+        #[Column()]
+        #[ForeignKey("tournois", "tournoi_id")]
         protected int $tournoi_id,
 
-        #[Column("INT", false, false, false)]
+        #[Column()]
         #[ForeignKey("teams", "team_id")]
         protected int $team_a,
 
         #[ForeignKey("teams", "team_id")]
-        #[Column("INT", false, false, false)]
+        #[Column()]
         protected int $team_b,
 
-        #[Column("FLOAT", false, false, false)]
-        protected int $score_a,
+        #[Column(false, false, false)]
+        protected float $score_a,
 
-        #[Column("FLOAT", false, false, false)]
-        protected int $score_b,
+        #[Column(false, false, false)]
+        protected float $score_b,
 
-        #[Column("INT", false, false, false)]
+        #[Column()]
         #[ForeignKey("teams", "team_id")]
         protected int $winner_id
     ) {}

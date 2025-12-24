@@ -1,28 +1,39 @@
 
 <?php
 
-use Core\Database\Migration\Column;
-use Core\Database\Migration\Table;
 
-#[Table("teams")]
+use Core\Database\Migration\Table;
+use Core\ORM\Migration\Attributes\Column;
+use Core\ORM\Migration\Constrains\AutoIncrement;
+use Core\ORM\Migration\Constrains\Defaulte;
+use Core\ORM\Migration\Constrains\Id;
+use Core\ORM\Migration\Constrains\Text;
+
+#[Table("toutnois")]
 
 class Tournoi
 {
     public function __construct(
-        #[Column("INT", primary: true, autoInc: true, unique: true)]
+        #[Id]
+        #[AutoIncrement]
+        #[Column(unique: true)]
         public int $tournoi_id,
 
-        #[Column("VARCHAR(255)",  unique: true)]
+        #[Text]
+        #[Column(unique: true)]
         public string $name,
 
-        #[Column("VARCHAR(255)", unique: true)]
+        #[Text]
+        #[Column(unique: true)]
         public string $Cashprize,
 
-        #[Column("VARCHAR(255)")]
+        #[Text]
+        #[Column()]
         public string $format,
 
-        #[Column("VARCHAR(255)", default: "CURRENT_TIMESTAMP")]
+        #[Text]
+        #[Defaulte("CURRENT_TIMESTAMP")]
+        #[Column()]
         public string $create_at,
     ) {}
 }
-

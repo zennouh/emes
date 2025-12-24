@@ -4,23 +4,30 @@
 use Core\Database\Migration\Column;
 use Core\Database\Migration\ForeignKey;
 use Core\Database\Migration\Table;
+use Core\ORM\Migration\Constrains\AutoIncrement;
+use Core\ORM\Migration\Constrains\Id;
+use Core\ORM\Migration\Constrains\Text;
 
 #[Table("sponsors")]
 
 class Sponsor
 {
     public function __construct(
-        #[Column("INT", primary: true, autoInc: true, unique: true)]
+        #[Id]
+        #[AutoIncrement]
+        #[Column(unique: true)]
         public int $sponsor_id,
 
-        #[Column("VARCHAR(255)", unique:true)]
+        #[Text]
+        #[Column(unique: true)]
         public string $name,
 
-        #[Column("VARCHAR(255)")]
+        #[Text()]
+        #[Column()]
         public string $finace,
 
-        #[Column("INT")]
-        #[ForeignKey("tournoi", "tournoi_id")]
+        #[Column()]
+        #[ForeignKey("tournois", "tournoi_id")]
         public int $tournoi_id,
 
 

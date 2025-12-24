@@ -1,26 +1,37 @@
 <?php
 
-use Core\Database\Migration\Column;
+
 use Core\Database\Migration\ForeignKey;
 use Core\Database\Migration\Table;
+use Core\ORM\Migration\Attributes\Column;
+use Core\ORM\Migration\Constrains\AutoIncrement;
+use Core\ORM\Migration\Constrains\Defaulte;
+use Core\ORM\Migration\Constrains\Id;
+use Core\ORM\Migration\Constrains\Text;
 
 #[Table("players")]
 class Player
 {
     public function __construct(
-        #[Column("INT", primary: true, autoInc: true, unique: true)]
+        #[Id]
+        #[AutoIncrement]
+        #[Column(unique: true)]
         public int $player_id,
 
-        #[Column("VARCHAR(255)",)]
+        #[Text]
+        #[Column()]
         public string $pseudo,
 
-        #[Column("VARCHAR(255)", default: "noah")]
+        #[Text]
+        #[Defaulte("attack")]
+        #[Column()]
         public string $role,
 
-        #[Column("FLOAT", default: 0)]
+        #[Defaulte("0")]
+        #[Column()]
         public float $salary,
 
-        #[Column("INT", unique: false)]
+        #[Column()]
         #[ForeignKey("teams", "team_id")]
         protected int $team_id,
     ) {}
