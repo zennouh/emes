@@ -10,6 +10,16 @@ abstract class BaseRepository
     protected PDO $db;
     protected string $table;
 
+    public function getTable()
+    {
+        return $this->table;
+    }
+
+    public function setTable($tName)
+    {
+        $this->table = $tName;
+    }
+
     public function __construct()
     {
         $this->db = ConnectDB::connection();
