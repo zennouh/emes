@@ -2,6 +2,8 @@
 
 namespace Services;
 
+
+/// class for inject class 
 class Container
 {
     protected array $bindings = [];
