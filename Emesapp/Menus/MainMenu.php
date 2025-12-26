@@ -2,12 +2,10 @@
 
 namespace Menus;
 
-use ConnectDB;
-use CrudMenu;
-use EmesApp\PrintMsg;
+
+use MethodHelpers\PrintMsg;
 use Repo\ClubRepository;
 use Repo\TeamRepository;
-use Repo\PlayerRepository;
 use Repo\TournamentRepository;
 use Repo\MatchRepository;
 
@@ -15,7 +13,6 @@ class MainMenu extends Menu
 {
     private $clubRepo;
     private $teamRepo;
-    private $playerRepo;
     private $tournamentRepo;
     private $matchRepo;
 
@@ -24,9 +21,9 @@ class MainMenu extends Menu
     {
         $this->clubRepo = new ClubRepository();
         $this->teamRepo = new TeamRepository();
-        $this->playerRepo = new PlayerRepository();
         $this->tournamentRepo = new TournamentRepository();
         $this->matchRepo = new MatchRepository();
+        echo "constfyt";
     }
 
     function mainMenu()
@@ -34,23 +31,22 @@ class MainMenu extends Menu
 
 
         while (true) {
-            parent::clearScreen();
+            $this->clearScreen();
 
             $options = [
                 '1' => 'Tournaments Management',
                 '2' => 'Clubs Management',
                 '3' => 'Teams Management',
-                '4' => 'Players Management',
-                '5' => 'Matches Management',
-                '6' => 'Reports & Statistics',
-                '7' => 'Exit Application'
+                '4' => 'Matches Management',
+                '5' => 'Reports & Statistics',
+                '6' => 'Exit Application'
             ];
 
-            parent::printMenu($options, "E-Sport Event Manager");
+            $this->printMenu($options, "E-Sport Event Manager");
 
-            $choice =  parent::input("Select an option", true);
+            $choice =  $this->input("Select an option", true);
 
-            parent::clearScreen();
+            $this->clearScreen();
 
             switch ($choice) {
                 case '1':
@@ -63,16 +59,13 @@ class MainMenu extends Menu
                     CrudMenu::crudMenu("Teams", $this->teamRepo, 'team');
                     break;
                 case '4':
-                    CrudMenu::crudMenu("Players", $this->playerRepo, 'player');
-                    break;
-                case '5':
                     CrudMenu::crudMenu("Matches", $this->matchRepo, 'match');
                     break;
-                case '6':
-                    ReportMenu::reportsMenu();
+                case '5':
+                    StatisticMenu::reportsMenu();
                     break;
-                case '7':
-                    parent::clearScreen();
+                case '6':
+                    $this->clearScreen();
                     PrintMsg::printSuccess("Thank you!");
                     echo "\n  \033[1;35m Goodbye!\033[0m\n\n";
                     exit(0);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Database\Migration;
+namespace Core\ORM\Migration\Attributes;
 
 use Attribute;
 

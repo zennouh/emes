@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-
-
 use Core\Console\Application;
+
+require_once "Core/Console/Application.php";
 
 $app = new Application();
 $app->run($argv);

@@ -2,8 +2,8 @@
 
 namespace Core\ORM\Migration\Handler;
 
-use Core\Database\Migration\ForeignKey;
-use Core\Database\Migration\Table;
+use Core\ORM\Migration\Attributes\ForeignKey;
+use Core\ORM\Migration\Attributes\Table;
 use Core\ORM\Migration\Attributes\Column;
 use Core\ORM\Migration\Constrains\AutoIncrement;
 use Core\ORM\Migration\Constrains\Defaulte;
@@ -19,13 +19,15 @@ class Handler
     {
         $ref = new ReflectionClass($className);
 
-        // Table name
-        $tableAttr = $ref->getAttributes(Table::class)[0] ?? null;
+        $tableAttr = $ref->getAttributes(Table::class)[0];
+
+
+
         if (!$tableAttr) {
             throw new Exception("Table attribute missing");
         }
 
-        $table = $tableAttr->newInstance()->name;
+        $table = $tableAttr->getArguments()[0];
         $columns = [];
         $foreignKeys = [];
 
@@ -54,11 +56,10 @@ class Handler
             return null;
         }
 
-        $column = $colAttr->newInstance();
         $name = $prop->getName();
 
         $type = $this->mapType($prop);
-        
+
         if ($prop->getAttributes(TimeStamp::class)) {
             $type = 'TIMESTAMP';
         }
@@ -67,14 +68,18 @@ class Handler
 
 
 
+        $column = $colAttr->getArguments();
+        // var_dump($column);
+        echo "=================================";
+        return $sql;
         if ($prop->getAttributes(Id::class)) {
             $sql .= " PRIMARY KEY";
         } else {
-            if (!$column->nullable) {
+            if (!isset($column["nullable"])) {
                 $sql .= " NOT NULL";
             }
 
-            if ($column->unique) {
+            if ($column["unique"]) {
                 $sql .= " UNIQUE";
             }
         }
@@ -107,12 +112,14 @@ class Handler
             return null;
         }
 
-        $fk = $fkAttr->newInstance();
+        $fk = $fkAttr->getArguments();
+        var_dump($fk);
+        echo "\n";
         $column = $prop->getName();
 
         return "FOREIGN KEY ($column) 
-            REFERENCES {$fk->reference}({$fk->colmun})
-            ON DELETE {$fk->delete}
-            ON UPDATE {$fk->update}";
+            REFERENCES {$fk["reference"]}({$fk["colmun"]})
+            ON DELETE {$fk["delete"]}
+            ON UPDATE {$fk["update"]}";
     }
 }

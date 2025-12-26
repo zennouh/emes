@@ -1,7 +1,16 @@
 <?php
 
-use EmesApp\PrintMsg;
+namespace Menus;
+
+use MethodHelpers\Enrichment;
+use Exception;
+use MethodHelpers\PrintMsg;
 use Menus\Menu;
+use PDO;
+use Repo\ClubRepository;
+use Repo\TeamRepository;
+use Repo\TournamentRepository;
+use Services\Container;
 
 class CrudMenu extends Menu
 {
@@ -50,22 +59,22 @@ class CrudMenu extends Menu
     private static function listAll($repo, string $title, string $type)
     {
         parent::clearScreen();
-        PrintMsg::printHeader("ALL " . strtoupper($title));
+        parent::printHeader("ALL " . strtoupper($title));
 
         try {
             $data = $repo->all();
-            displayEnrichedData($data, $type);
+            Enrichment::displayEnrichedData($data, $type);
         } catch (Exception $e) {
             PrintMsg::printError("Error in get data: " . $e->getMessage());
         }
 
         PrintMsg::pause();
     }
-    
+
     private static  function findById($repo, string $title, string $type)
     {
         parent::clearScreen();
-        PrintMsg::printHeader("SEARCH " . strtoupper(rtrim($title, 's')));
+        parent::printHeader("SEARCH " . strtoupper(rtrim($title, 's')));
 
         $id = (int)   parent::input("Enter ID", true);
 
@@ -73,7 +82,7 @@ class CrudMenu extends Menu
             $result = $repo->find($id);
 
             if ($result) {
-                displayEnrichedData([$result], $type);
+                Enrichment::displayEnrichedData([$result], $type);
             } else {
                 PrintMsg::printInfo("No " . rtrim($title, 's') . " found with ID: $id");
             }
@@ -84,11 +93,10 @@ class CrudMenu extends Menu
         PrintMsg::pause();
     }
 
-
     private static  function createEntity($repo, string $type)
     {
         parent::clearScreen();
-        PrintMsg::printHeader("CREATE NEW " . strtoupper($type));
+        parent::printHeader("CREATE NEW " . strtoupper($type));
 
         try {
             switch ($type) {
@@ -103,22 +111,6 @@ class CrudMenu extends Menu
                     $name =   parent::input("Team Name", true);
                     $game =   parent::input("Game", true);
                     $repo->create($clubId, $name, $game);
-                    break;
-
-                case 'player':
-                    $teamId = self::selectTeam();
-                    $pseudo =   parent::input("Player Pseudo", true);
-
-                    echo "\n  Available roles: \033[1;32mleader\033[0m, \033[1;32mmember\033[0m\n";
-                    do {
-                        $role = strtolower(parent::input("Role", true));
-                        if (!in_array($role, ['leader', 'member'])) {
-                            PrintMsg::printError("Invalid role. Choose 'leader' or 'member'.");
-                        }
-                    } while (!in_array($role, ['leader', 'member']));
-
-                    $salary = (int)   parent::input("Salary", true);
-                    $repo->create($teamId, $pseudo, $role, $salary);
                     break;
 
                 case 'tournament':
@@ -177,7 +169,7 @@ class CrudMenu extends Menu
     private static function deleteEntity($repo, string $title, string $type)
     {
         parent::clearScreen();
-        PrintMsg::printHeader("DELETE " . strtoupper(rtrim($title, 's')));
+        parent::printHeader("DELETE " . strtoupper(rtrim($title, 's')));
 
         $id = (int)   parent::input("Enter ID to delete", true);
 
@@ -190,7 +182,7 @@ class CrudMenu extends Menu
                 return;
             }
 
-            displayEnrichedData([$record], $type);
+            Enrichment::displayEnrichedData([$record], $type);
 
             if (parent::confirmAction("Are you sure you want to delete this record?")) {
                 $repo->delete($id);
@@ -207,43 +199,73 @@ class CrudMenu extends Menu
 
     private static   function selectClub()
     {
-        global $clubRepo;
+        $clubRepo = Container::Instance()->get(ClubRepository::class);
 
         echo "\n  \033[1;35m📋 Available Clubs:\033[0m\n";
-        $clubs = $clubRepo->all();
+        $clubs = $clubRepo->all(PDO::FETCH_OBJ);
+
+        $Ids = array_map(function ($c) {
+            return $c->id;
+        }, $clubs);
 
         foreach ($clubs as $club) {
             echo "    \033[33m[{$club->id}]\033[0m {$club->name} - {$club->city}\n";
         }
-
-        return (int) self::input("\n  Select Club ID", true);
+        $pickedId = (int) self::input("\n  Select Club ID", true);
+        if (in_array($pickedId, $Ids)) {
+            return $pickedId;
+        } else {
+            throw new Exception("Invalid id: $pickedId");
+        }
     }
 
     private static   function selectTeam()
     {
-        global $teamRepo;
+        $teamRepo = Container::Instance()->get(TeamRepository::class);
 
         echo "\n  \033[1;35m📋 Available Teams:\033[0m\n";
-        $teams = enrichTeamsData($teamRepo->all());
+        $teams = Enrichment::enrichTeamsData($teamRepo->all());
 
         foreach ($teams as $team) {
             echo "    \033[33m[{$team['id']}]\033[0m {$team['name']} ({$team['club_name']}) - {$team['game']}\n";
         }
 
-        return (int) self::input("\n  Select Team ID", true);
+
+        $Ids = array_map(function ($c) {
+            return $c["id"];
+        }, $teams);
+
+        $pickedId = (int) self::input("\n  Select Team ID", true);
+        if (in_array($pickedId, $Ids)) {
+            return $pickedId;
+        } else {
+
+            throw new Exception("Invalid id: $pickedId");
+        }
     }
 
     private static   function selectTournament()
     {
-        global $tournamentRepo;
+        $tournamentRepo = Container::Instance()->get(TournamentRepository::class);
 
         echo "\n  \033[1;35m📋 Available Tournaments:\033[0m\n";
-        $tournaments = $tournamentRepo->all();
+        $tournaments = $tournamentRepo->all(PDO::FETCH_OBJ);
 
         foreach ($tournaments as $tournament) {
             echo "    \033[33m[{$tournament->id}]\033[0m {$tournament->title} - \${$tournament->cashPrize}\n";
         }
 
-        return (int) self::input("\n  Select Tournament ID", true);
+
+        $Ids = array_map(function ($c) {
+            return $c->id;
+        }, $tournaments);
+
+        $pickedId = (int) self::input("\n  Select Tournament ID", true);
+        if (in_array($pickedId, $Ids)) {
+            return $pickedId;
+        } else {
+            // PrintMsg::printError("Invalid Id: $pickedId");
+            throw new Exception("Invalid id: $pickedId");
+        }
     }
 }

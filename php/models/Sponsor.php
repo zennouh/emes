@@ -1,9 +1,9 @@
 
 <?php
 
-use Core\Database\Migration\Column;
-use Core\Database\Migration\ForeignKey;
-use Core\Database\Migration\Table;
+use Core\ORM\Migration\Attributes\Column;
+use Core\ORM\Migration\Attributes\ForeignKey;
+use Core\ORM\Migration\Attributes\Table;
 use Core\ORM\Migration\Constrains\AutoIncrement;
 use Core\ORM\Migration\Constrains\Id;
 use Core\ORM\Migration\Constrains\Text;

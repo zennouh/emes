@@ -34,6 +34,7 @@ class Kernel
 
     public function handler()
     {
+        /// app menu
         $mainMenu = new MainMenu();
         $mainMenu->mainMenu();
     }

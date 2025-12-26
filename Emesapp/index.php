@@ -1,19 +1,22 @@
 <?php
 
-use EmesApp\PrintMsg;
-use Menus\MainMenu;
+// use EmesApp\PrintMsg;
+
+use MethodHelpers\PrintMsg;
+
 
 spl_autoload_register(function ($className) {
-    echo $className . "\n";
-    require_once $className . ".php";
+    $className = str_replace("\\", "/", $className);
+    require_once "./" . $className . ".php";
 });
 
 
 
 try {
-    $mainMenu = new MainMenu();
-    $mainMenu->mainMenu();
+    $kernel = new Kernel();
+    $kernel->handler();
 } catch (Exception $e) {
     PrintMsg::printError("error: " . $e->getMessage());
+
     exit(1);
 }

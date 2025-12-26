@@ -1,6 +1,6 @@
 <?php
 
-namespace EmesApp;
+namespace MethodHelpers;
 
 abstract class PrintMsg
 {
@@ -10,16 +10,7 @@ abstract class PrintMsg
         fgets(STDIN);
     }
 
-    static function printHeader(string $title)
-    {
-        $width = 50;
-        $padding = ($width - strlen($title) - 2) / 2;
-
-        echo "\n\033[1;44m" . str_repeat(" ", $width) . "\033[0m\n";
-        echo "\033[1;44m" . str_repeat(" ", floor($padding)) . " $title " . str_repeat(" ", ceil($padding)) . "\033[0m\n";
-        echo "\033[1;44m" . str_repeat(" ", $width) . "\033[0m\n\n";
-    }
-
+  
     static  function printSuccess(string $message)
     {
         echo "\n  \033[1;32m✓ $message\033[0m\n";

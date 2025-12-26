@@ -2,28 +2,19 @@
 
 namespace Core\Console;
 
+require_once "Core/Console/Commands/MigrateCommand.php";
 use Core\Console\Commands\MigrateCommand;
 
 class Application
 {
-    protected array $commands = [];
+    protected array $commands = ['migrate' => MigrateCommand::class];
 
-    public function __construct()
-    {
-        $this->registerCommands();
-    }
 
-    protected function registerCommands()
-    {
-        $this->commands = [
-            'migrate' => MigrateCommand::class,
-        ];
-    }
 
     public function run(array $argv)
     {
         $command = $argv[1] ?? null;
-        if ($command || isset($this->commands[$command])) {
+        if (!$command || !isset($this->commands[$command])) {
             $this->showHelp();
             return;
         }
@@ -36,7 +27,7 @@ class Application
     {
         echo "Available commands:\n";
         foreach ($this->commands as $name => $class) {
-            echo "  php artisan $name\n";
+            echo "  php nouh $name\n";
         }
     }
 }

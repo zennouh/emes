@@ -15,11 +15,11 @@ abstract class BaseRepository
         $this->db = ConnectDB::connection();
     }
 
-    public function all(): array
+    public function all($fetchtype = PDO::FETCH_ASSOC): array
     {
         return $this->db
             ->query("SELECT * FROM {$this->table}")
-            ->fetchAll(PDO::FETCH_ASSOC);
+            ->fetchAll($fetchtype);
     }
 
     public function find(int $id): ?array
